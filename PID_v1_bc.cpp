@@ -58,11 +58,14 @@ PID::PID(double* Input, double* Output, double* Setpoint,
  **********************************************************************************/
 bool PID::Compute()
 {
+   static bool first = true;
+   
    if(!inAuto) return false;
    unsigned long now = millis();
    unsigned long timeChange = (now - lastTime);
-   if(timeChange>=SampleTime)
+   if(first || (timeChange>=SampleTime))
    {
+      lastTime = now;
       /*Compute all the working error variables*/
       double input = *myInput;
       double error = *mySetpoint - input;
@@ -95,7 +98,7 @@ bool PID::Compute()
 
       /*Remember some variables for next time*/
       lastInput = input;
-      lastTime = now;
+      first = false;
 	    return true;
    }
    else return false;
